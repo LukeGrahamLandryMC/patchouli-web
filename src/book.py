@@ -25,17 +25,10 @@ class Book:
         modid = rl.split(":")[0]
         path = ":".join(rl.split(":")[1:])
 
-
     
     def generateHTML(self):
         self.getBookData()
         return ""
 
-
-    
-
-
 if __name__ == "__main__":
-    # book = Book("resources/Botania-master/src/main/resources", "botania")
-    print(findBooks())
-
+    pass

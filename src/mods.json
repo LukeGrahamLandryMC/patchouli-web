@@ -1,4 +1,12 @@
 [
-    ["VazkiiMods", "Patchouli", "1.16-forge"],
-    ["VazkiiMods", "Botania", "master"]
+    {
+        "source": ["VazkiiMods", "Patchouli", "1.16-forge"]
+    }, 
+    {
+        "source": ["VazkiiMods", "Botania", "master"],
+        "download": "https://curseforge.com/minecraft/mc-mods/botania",
+        "donate": "https://www.patreon.com/Vazkii",
+        "namespace": "botania"
+    }
+    
 ]

@@ -100,9 +100,13 @@ def loadBooks():
             book = Book(namespace, bookname)
 
             bookData.append({
-                "name": book.display_name,
-                "location": namespace + "/" + bookname
+                "displayName": book.display_name,
+                "namespace": namespace,
+                "bookName": bookname,
+                "description": book.description
             })
+
+            book.generateHTML()
 
             used_resources += book.used_resources
 
@@ -112,12 +116,41 @@ def loadBooks():
     
     return bookData
 
+def getModData(mods, namespace):
+    for mod in mods:
+        if "namespace" in mod and mod["namespace"] == namespace:
+            return mod
+
+def createIndexPages(mods, books):
+    # todo: sort <books> by curseforge downloads
+
+    page_html = ""
+
+    for book in books:
+        mod = getModData(mods, book["namespace"])
+        page_html += '<div class="mod"> <a href="{}">'.format("/" + book["namespace"] + "/" + book["bookName"])
+        page_html += '<img class="modicon" src="/img/mod/{}" alt="mod icon">'.format(book["namespace"])
+
+        page_html += '<div> <b> {} </b>'.format(book["displayName"])
+        page_html += '<p> {} </p> </div>'.format(book["description"])
+
+        page_html += "</a>"
+
+        page_html += '<a href="https://github.com/{}/{}/tree/{}" class="imlink"> <img src="/img/github.png" alt="github icon"></a>'.format(*mod["source"])
+        page_html += '<a href="https://github.com/{}/{}/tree/{}" class="imlink"> <img src="/img/curseforge.png" alt="curseforge icon"></a>'.format(mod["download"])
+        page_html += '<a href="https://github.com/{}/{}/tree/{}" class="imlink"> <img src="/img/patreon.png" alt="patreon icon"></a>'.format(mod["donate"])
+
+        page_html += "</div>"
+    
+    with open("templates/index.html", "r") as f:
+        template_html = "\n".join(f.readlines())
+    with open("../index.html", "w") as f:
+        f.write(template_html.replace("$BOOKS", page_html))
+
 
 def main():
     with open("mods.json", "r") as f:
         mods = json.loads("\n".join(f.readlines()))
     getMods(mods)
     books = loadBooks()
-    # generateIndexFile(books) # TODO
-
-clearUnusedResources([])
+    createIndexPages(mods, books)
