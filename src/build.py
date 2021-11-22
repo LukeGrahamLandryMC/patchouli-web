@@ -54,11 +54,11 @@ def getFromGithub(username, repository, branch):
 # downloads all mods listed in /src/mods.json and puts them in /mods
 # then moves data and assets directories into /resources (correctly combining same namespace folders from different mods)
 # then empties /mods
-def getMods(mods):
+def downloadAllModFiles(mods):
     os.mkdir("../mods")
 
     for mod in mods:
-        getFromGithub(*mod)
+        getFromGithub(*mod["source"])
     gatherModResources()
 
     os.rmdir("../mods")
@@ -91,7 +91,7 @@ def findBooks():
     return results
 
 # generates the html pages for all books in ./resources
-def loadBooks():
+def createBookHTML():
     bookData = [] # used to generate index file
     used_resources = []
 
@@ -103,14 +103,12 @@ def loadBooks():
                 "displayName": book.display_name,
                 "namespace": namespace,
                 "bookName": bookname,
-                "description": book.description
+                "description": book.landing_text
             })
 
             book.generateHTML()
 
-            used_resources += book.used_resources
-
-            # TODO: generate html files
+            used_resources += book.required_resources
 
     clearUnusedResources(used_resources)
     
@@ -121,7 +119,7 @@ def getModData(mods, namespace):
         if "namespace" in mod and mod["namespace"] == namespace:
             return mod
 
-def createIndexPages(mods, books):
+def createIndexPage(mods, books):
     # todo: sort <books> by curseforge downloads
 
     page_html = ""
@@ -151,6 +149,7 @@ def createIndexPages(mods, books):
 def main():
     with open("mods.json", "r") as f:
         mods = json.loads("\n".join(f.readlines()))
-    getMods(mods)
-    books = loadBooks()
-    createIndexPages(mods, books)
+    downloadAllModFiles(mods)
+    books = createBookHTML()
+    createIndexPage(mods, books)
+
